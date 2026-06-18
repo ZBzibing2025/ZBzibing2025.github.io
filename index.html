@@ -1,306 +1,476 @@
-
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="content-type" content="text/html; charset=utf-8">
-    <meta name="renderer" content="webkit"/>
-    <meta name="force-rendering" content="webkit"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="report" content='{"spm":"1001.2101","extra":{"tsab":"t_1","lvab":"t_new"},"pid":"blog"}'>
-    <meta name="referrer" content="always">
-    <meta http-equiv="Cache-Control" content="no-siteapp" /><link rel="alternate" media="handheld" href="#" />
-    <meta name="shenma-site-verification" content="5a59773ab8077d4a62bf469ab966a63b_1497598848">
-    <meta name="applicable-device" content="pc">
-    <title>[游戏技术] Hunter Mode 猎人模式v1.8(重制版)_什么mod杀特感得积分_ZBzibing的博客-CSDN博客</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>开源库合集 | Github.io</title>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", Consolas, system-ui, sans-serif;
+}
+:root {
+  --bg-main: #0d1117;
+  --card-bg: #161b22;
+  --text-primary: #f0f6fc;
+  --text-secondary: #8b949e;
+  --accent: #58a6ff;
+  --green: #3fb950;
+  --border: #30363d;
+  --anim-speed: 0.5s cubic-bezier(0.25,0.46,0.45,0.94);
+}
+body {
+  background: var(--bg-main);
+  color: var(--text-primary);
+  overflow: hidden;
+  height: 100vh;
+}
+/* 顶部导航 */
+header {
+  width: 100%;
+  padding: 1.2rem 6%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  position: fixed;
+  top: 0;
+  z-index: 999;
+  background: rgba(13,17,23,0.92);
+  backdrop-filter: blur(10px);
+}
+.logo {
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: var(--accent);
+}
+.header-link {
+  color: var(--text-secondary);
+  text-decoration: none;
+  margin-left: 24px;
+  transition: 0.2s;
+}
+.header-link:hover {
+  color: var(--accent);
+}
+.github-btn {
+  border: 1px solid var(--border);
+  padding: 6px 14px;
+  border-radius: 6px;
+}
+.github-btn:hover {
+  border-color: var(--accent);
+}
 
-        <meta name="keywords" content="什么mod杀特感得积分">
-        <meta name="csdn-baidu-search"  content='{"autorun":true,"install":true,"keyword":"什么mod杀特感得积分"}'>
-    <meta name="description" content="Hunter模式(简称:H-MODE),是一个与感染者Hunter对抗的游戏.人类玩家可通过选择单人或多人模式进行游戏通关.由于Hunter不间断对玩家进行骚扰和攻击,造成游戏的难度大大的提升,游戏的目的也是为了锻炼玩家的反应能力与技术的提升_什么mod杀特感得积分">
-        <link rel="stylesheet" type="text/css" href="css/detail_enter-95840df9c6.min.css">
-    
-        <link rel="stylesheet" type="text/css" href="css/skin-yellow-28d34ab5fa.min.css">
-    <link rel="stylesheet" type="text/css" href="css/sandalstrap.min.css">
-    <style>
-        .MathJax, .MathJax_Message, .MathJax_Preview{
-            display: none
-        }
-    </style>
+/* 扑克牌容器区域 */
+.poker-wrap {
+  width: 100vw;
+  height: 100vh;
+  padding-top: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.poker-box {
+  width: 100%;
+  height: 70vh;
+  position: relative;
+  overflow: hidden;
+}
+/* 单张扑克牌卡片 */
+.poker-card {
+  width: 620px;
+  height: 88%;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform-origin: center center;
+  transform: translate(-50%, -50%);
+  transition: all var(--anim-speed);
+  overflow: hidden;
+}
+/* 卡片背景层 + 暗色遮罩，保证文字可读 */
+.card-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.card-mask {
+  position: absolute;
+  inset: 0;
+  background: rgba(13, 17, 23, 0.82);
+}
+/* 卡片内容容器，浮在遮罩上层 */
+.card-inner {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  padding: 40px 36px;
+  display: flex;
+  flex-direction: column;
+}
+/* 堆叠层级、偏移、旋转扑克牌效果 */
+.poker-card.hide-1 {
+  transform: translate(-110%, -48%) rotate(-6deg) scale(0.86);
+  opacity: 0.35;
+  z-index: 1;
+}
+.poker-card.hide-2 {
+  transform: translate(110%, -48%) rotate(6deg) scale(0.86);
+  opacity: 0.35;
+  z-index: 1;
+}
+.poker-card.prev {
+  transform: translate(-70%, -50%) rotate(-3deg) scale(0.93);
+  opacity: 0.65;
+  z-index: 10;
+}
+.poker-card.next {
+  transform: translate(70%, -50%) rotate(3deg) scale(0.93);
+  opacity: 0.65;
+  z-index: 10;
+}
+.poker-card.active {
+  transform: translate(-50%, -50%) rotate(0deg) scale(1);
+  opacity: 1;
+  z-index: 99;
+  border-color: var(--accent);
+  box-shadow: 0 0 40px rgba(88, 166, 255, 0.18);
+}
 
+/* 卡片内部内容样式 */
+.card-title {
+  font-size: 2.4rem;
+  margin-bottom: 12px;
+  background: linear-gradient(90deg, #58a6ff, #7ee787);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+.card-desc {
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  line-height: 1.7;
+  margin-bottom: 32px;
+}
+.card-subtitle {
+  font-size: 1.3rem;
+  margin: 16px 0 10px;
+  color: #e1e8f0;
+}
+.tag-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 28px;
+}
+.tag {
+  padding: 4px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  background: rgba(0,0,0,0.3);
+}
+.code-block {
+  background: rgba(26, 31, 38, 0.85);
+  border-radius: 10px;
+  padding: 16px;
+  overflow-x: auto;
+  margin-top: auto;
+}
+pre {
+  color: #a5d6ff;
+  font-family: Consolas, monospace;
+  font-size: 0.9rem;
+}
+.card-buttons {
+  margin-top: 24px;
+  display: flex;
+  gap: 16px;
+}
+.btn-card-primary {
+  background: var(--accent);
+  color: #0d1117;
+  padding: 10px 22px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+}
+.btn-card-outline {
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  padding: 10px 22px;
+  border-radius: 8px;
+  text-decoration: none;
+  background: rgba(0,0,0,0.25);
+}
+
+/* 切换按钮 */
+.slide-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(48,54,61,0.6);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  font-size: 22px;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  z-index: 200;
+}
+.btn-left { left: 40px; }
+.btn-right { right: 40px; }
+.slide-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* 底部圆点指示器 */
+.dot-group {
+  position: fixed;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 14px;
+  z-index: 200;
+}
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid var(--text-secondary);
+  cursor: pointer;
+  transition: 0.3s;
+}
+.dot.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  transform: scale(1.3);
+}
+
+/* 移动端适配 */
+@media(max-width: 900px) {
+  .poker-card {
+    width: 88vw;
+  }
+  .card-title {
+    font-size: 1.8rem;
+  }
+  .header-link {
+    display: none;
+  }
+  .slide-btn {
+    width: 38px;
+    height: 38px;
+  }
+  .btn-left { left: 12px; }
+  .btn-right { right: 12px; }
+}
+</style>
 </head>
-  <body class="nodata " style="">
-        <div class="main_father clearfix d-flex justify-content-center mainfather-concision" style="height:100%;">
-          <div class="container clearfix container-concision" id="mainBox">
-          <main>
-
-<div class="blog-content-box">
-    <div class="article-header-box">
-        <div class="article-header">
-            <div class="article-title-box">
-                <h1 class="title-article" id="articleContentId">Hunter Mode 猎人模式v1.8(重制版)</h1>
-            </div>
-            <!-- <div class="article-info-box">
-                <div class="article-bar-top">
-                    <img class="article-type-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/original.png" alt="">
-                    <div class="bar-content">
-                      <a class="follow-nickName " href="https://blog.csdn.net/ZBzibing" target="_blank" rel="noopener" title="ZBzibing">ZBzibing</a>
-                    <img class="article-time-img article-heard-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newUpTime2.png" alt="">
-                    <span class="time">已于&nbsp;2023-01-06 17:04:48&nbsp;修改</span>
-                    <img class="article-read-img article-heard-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/articleReadEyes2.png" alt="">
-                    <span class="read-count">2677</span>
-                    <a id="blog_detail_zk_collection" class="un-collection" data-report-click='{"mod":"popu_823","spm":"1001.2101.3001.4232","ab":"new"}'>
-                        <img class="article-collect-img article-heard-img un-collect-status isdefault" style="display:inline-block" src="https://csdnimg.cn/release/blogv2/dist/pc/img/tobarCollect2.png" alt="">
-                        <img class="article-collect-img article-heard-img collect-status isactive" style="display:none" src="https://csdnimg.cn/release/blogv2/dist/pc/img/tobarCollectionActive2.png" alt="">
-                        <span class="name">收藏</span>
-                        <span class="get-collection">
-                        </span>
-                    </a>
-                      <span class="c-orange">公开</span>
-                    </div>
-                </div>
-                <div class="blog-tags-box">
-                    <div class="tags-box artic-tag-box">
-                            <span class="label">分类专栏：</span>
-                                <a class="tag-link" href="https://blog.csdn.net/zbzibing/category_646813.html" target="_blank" rel="noopener"># 起源引擎 SOURCE</a>
-                            <span class="label">文章标签：</span>
-                                <a data-report-click='{"mod":"popu_626","spm":"1001.2101.3001.4223","strategy":"猎人模式","ab":"new","extra":"{\"searchword\":\"猎人模式\"}"}' class="tag-link" href="https://so.csdn.net/so/search/s.do?q=%E7%8C%8E%E4%BA%BA%E6%A8%A1%E5%BC%8F&amp;t=all&amp;o=vip&amp;s=&amp;l=&amp;f=&amp;viparticle=" target="_blank" rel="noopener">猎人模式</a>
-                                <a data-report-click='{"mod":"popu_626","spm":"1001.2101.3001.4223","strategy":"H-Mode","ab":"new","extra":"{\"searchword\":\"H-Mode\"}"}' class="tag-link" href="https://so.csdn.net/so/search/s.do?q=H-Mode&amp;t=all&amp;o=vip&amp;s=&amp;l=&amp;f=&amp;viparticle=" target="_blank" rel="noopener">H-Mode</a>
-                                <a data-report-click='{"mod":"popu_626","spm":"1001.2101.3001.4223","strategy":"求生之路","ab":"new","extra":"{\"searchword\":\"求生之路\"}"}' class="tag-link" href="https://so.csdn.net/so/search/s.do?q=%E6%B1%82%E7%94%9F%E4%B9%8B%E8%B7%AF&amp;t=all&amp;o=vip&amp;s=&amp;l=&amp;f=&amp;viparticle=" target="_blank" rel="noopener">求生之路</a>
-                                <a data-report-click='{"mod":"popu_626","spm":"1001.2101.3001.4223","strategy":"Left4Dead","ab":"new","extra":"{\"searchword\":\"Left4Dead\"}"}' class="tag-link" href="https://so.csdn.net/so/search/s.do?q=Left4Dead&amp;t=all&amp;o=vip&amp;s=&amp;l=&amp;f=&amp;viparticle=" target="_blank" rel="noopener">Left4Dead</a>
-                                <a data-report-click='{"mod":"popu_626","spm":"1001.2101.3001.4223","strategy":"紫冰","ab":"new","extra":"{\"searchword\":\"紫冰\"}"}' class="tag-link" href="https://so.csdn.net/so/search/s.do?q=%E7%B4%AB%E5%86%B0&amp;t=all&amp;o=vip&amp;s=&amp;l=&amp;f=&amp;viparticle=" target="_blank" rel="noopener">紫冰</a>
-                    </div>
-                </div>
-                <div class="up-time"><span>于&nbsp;2022-01-25 16:53:18&nbsp;首次发布</span></div>
-                <div class="slide-content-box">
-                    <div class="article-copyright">
-                        <div class="creativecommons">
-                            版权声明：本文为博主原创文章，遵循<a href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener"> CC 4.0 BY-SA </a>版权协议，转载请附上原文出处链接和本声明。
-                        </div>
-                        <div class="article-source-link">
-                            本文链接：<a href="https://blog.csdn.net/ZBzibing/article/details/122685497" target="_blank">https://blog.csdn.net/ZBzibing/article/details/122685497</a>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="operating">
-                      <a class="href-article-edit" href="https://editor.csdn.net/md?articleId=122685497">编辑</a>
-                    <a class="href-article-edit slide-toggle">版权</a>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div id="blogHuaweiyunAdvert"></div>
-        <div id="blogColumnPayAdvert">
-            <div class="column-group">
-                <div class="column-group-item column-group0 column-group-item-one">
-                    <div class="item-l">
-                        <a class="item-target" href="https://blog.csdn.net/zbzibing/category_646813.html" target="_blank" title="起源引擎 SOURCE"
-                        data-report-view='{"spm":"1001.2101.3001.6332"}'
-                        data-report-click='{"spm":"1001.2101.3001.6332"}'>
-                            <img class="item-target" src="https://img-blog.csdnimg.cn/5f5dedd3e61e4c3198d6e84fdb086a5c.png?x-oss-process=image/resize,m_fixed,h_224,w_224" alt="">
-                            <span class="title item-target">
-                                <span>
-                                <span class="tit">起源引擎 SOURCE</span>
-                                    <span class="dec">专栏收录该内容</span>
-                                </span>
-                            </span>
-                        </a>
-                    </div>
-                    <div class="item-m">
-                        <span>42 篇文章</span>
-                        <span>3 订阅</span>
-                    </div>
-                </div>
-            </div>
-        </div> -->
-    <article class="baidu_pl">
-        <div id="article_content" class="article_content clearfix">
-        <link rel="stylesheet" href="https://csdnimg.cn/release/blogv2/dist/mdeditor/css/editerView/kdoc_html_views-1a98987dfd.css">
-        <link rel="stylesheet" href="https://csdnimg.cn/release/blogv2/dist/mdeditor/css/editerView/ck_htmledit_views-25cebea3f9.css">
-                <div id="content_views" class="markdown_views prism-tomorrow-night">
-                    <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
-                        <path stroke-linecap="round" d="M5,0 0,2.5 5,5z" id="raphael-marker-block" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></path>
-                    </svg>
-                    <p><img src="img/H-MOD.jpg" alt="在这里插入图片描述" /></p> 
-<blockquote> 
- <p>  Hunter模式(简称:H-MODE),是一个与感染者Hunter对抗的游戏.人类玩家可通过选择单人或多人模式进行游戏通关.由于Hunter不间断对玩家进行骚扰和攻击,造成游戏的难度大大的提升,游戏的目的也是为了锻炼玩家的反应能力与技术的提升</p> 
-</blockquote> 
-<p></p> 
-<div class="toc"> 
- <h3>H-MODE目录说明</h3> 
- <ul><li><a href="#_5">一、模式程序</a></li><li><ul><li><a href="#ZB__HI_MA_6">Ⅰ、程序开发:紫冰(ZB) &amp; 葵花(HI MA)</a></li><li><a href="#18_8">Ⅱ、版本更新内容(1.8)</a></li></ul> 
-  </li><li><a href="#_110">二、游戏介绍</a></li><li><ul><li><a href="#_111">Ⅰ、中文介绍</a></li><li><ul><li><a href="#1_112">1.地图说明</a></li><li><ul><li><a href="#_113">⑴.地图设定</a></li><li><a href="#_122">⑵.地图解锁/重制</a></li><li><ul><li><a href="#a_131">a.毫不留情</a></li><li><a href="#b_138">b.坠机险途</a></li><li><a href="#c_140">c.死亡丧钟</a></li><li><a href="#d_143">d.寂静时分</a></li><li><a href="#e_148">e.大坝(非官方自带地图,需下载)</a></li><li><a href="#f_161">f.血型收获</a></li><li><a href="#g_163">g.牺牲</a></li><li><a href="#h_166">h.末路车站</a></li></ul> 
-    </li></ul> 
-    </li><li><a href="#2_169">2.地图顺序</a></li><li><a href="#3_173">3.游戏指令</a></li><li><a href="#4BUG_191">4.官方BUG修复</a></li></ul> 
-   </li><li><a href="#English_Explain_201">Ⅱ、英文介绍(English Explain)</a></li></ul> 
-  </li><li><a href="#_228">三、模式介绍</a></li><li><ul><li><a href="#_229">Ⅰ、休闲模式</a></li><li><a href="#_262">Ⅱ、进阶模式</a></li><li><a href="#_292">Ⅲ、硬核模式</a></li><li><a href="#_309">Ⅳ、怀旧模式</a></li><li><a href="#_334">Ⅴ、天梯模式</a></li><li><ul><li><a href="#_347">月赛/季赛/半年度/全年度</a></li></ul> 
-   </li><li><a href="#_349">Ⅵ、练习模式</a></li><li><a href="#_351">Ⅶ、其他模式</a></li><li><ul><li><a href="#1_352">1.附加类</a></li><li><ul><li><a href="#_355">⑴.写实模式</a></li><li><a href="#_357">⑵.吸血鬼模式</a></li></ul> 
-    </li><li><a href="#2_364">2.娱乐类</a></li><li><ul><li><a href="#_365">⑴.手雷大战</a></li><li><a href="#_370">⑵.坦克追杀令(制作中)</a></li><li><a href="#_377">⑶.大逃杀(待开发)</a></li><li><a href="#_385">⑷.捉迷藏又名躲猫猫(待开发)</a></li><li><a href="#_392">⑸.黑暗森林模式(待开发)</a></li><li><a href="#_394">⑹.猎人派对(制作中)</a></li></ul> 
-   </li></ul> 
-   </li><li><a href="#_396">ⅧⅨⅩ</a></li></ul> 
-  </li><li><a href="#_399">四、版本介绍</a></li><li><ul><li><a href="#__400">- 版本更新</a></li><li><a href="#_463">Ⅰ、历史版本</a></li></ul> 
- </li></ul> 
-</div> 
-<p></p> 
-<h1><a id="_5"></a>一、模式程序</h1> 
-<h2><a id="ZB__HI_MA_6"></a>Ⅰ、程序开发:紫冰(ZB) &amp; 葵花(HI MA)</h2> 
-<ul><li><a href="#%E7%89%B9%E5%88%AB%E6%84%9F%E8%B0%A2">特别感谢人员名单</a></li></ul> 
-<h2><a id="18_8"></a>Ⅱ、版本更新内容(1.8)</h2> 
-<ul><li><a href="#%E6%9C%AC%E6%AC%A1%E6%9B%B4%E6%96%B0">最新版本更新内容</a></li></ul> 
-<hr /> 
-<p><strong><font color="#3399EA">H-mod v1.8(<font color="red">难度与BUG海量修复更新!!!</font>)</font></strong><br /> <font color="red">由于Hunter的AI在不断的优化,已经高度模仿正常玩家的攻击行为,可以给玩家造成很大的困扰,足以拟补以前的缺点.所以在1.8版中,将坦克将不会使用连跳,恢复为正常的坦克,Hunter的骚扰将会提升到一个新的难度.为此本版本的各模式Hunter对玩家攻击的血量大幅度下调.</font><br /> <font color="#FF9900">新增功能:</font><br /> 挂机玩家30秒误操作自动转入空闲<br /> 4人练习模式<br /> 2v2允许单人通关(牺牲3)<br /> 营救动画出现时增加换图提示<br /> 梯子上可以开枪和推特感<br /> 重写官方触发机关引发尸潮,快速冲向终点时,感染者不刷新BUG<br /> <font color="#FF9900">排行榜更新</font><br /> 1.增加每个玩家通过每一张地图记录<br /> 2.增加整体流程记录<br /> 3.增加牺牲3通关记录<br /> <font color="#FF9900">更新功能</font><br /> 取消坦克连跳设定<br /> 3人练习投票失败修复<br /> 双人排行榜倒地一次黑白画面取消,但保留心跳声音<br /> 取消推Hunter的信息提示<br /> 添加被感染者控制时禁止旁观<br /> 禁止玩家投票修改难度<br /> 坦克出生位置调整<br /> 部分模式下只允许在第一关更换人物<br /> 修复系统日期显示符合国人习惯<br /> 限制WITCH数量仅有1只,每间隔一段时间会自动刷新在前方<br /> <font color="#FF9900">地图BUG修复:</font></p> 
-<ul><li>车站<br /> NAV感染者导航路线修复<br /> 地图门取消</li><li>寂静1<br /> 地图灯光修补<br /> 出生点NAV/路线遮挡物/僵尸分部<br /> 终点安全门前卡坦克问题<br /> 第一个丧尸手里补手枪<br /> 感染者爬墙箭头取消<br /> 坦克出生位置NAV导航</li><li>寂静4<br /> 终点安全门前灯光补光</li><li>丧钟1<br /> 第一关安全室门口坦克卡点<br /> 安全室屋内坦克卡点&#34;</li><li>丧钟2<br /> 终点安全门前卡坦克问题<br /> 机关警报卡特感问题</li><li>丧钟3<br /> 起点开门开关故障<br /> 新区域拓展NAV及布景制作<br /> 终点卡特感尸潮位置</li><li>丧钟4<br /> 新区域拓展NAV及布景制作<br /> 坦克复活卡点问题<br /> 安全室新区域导航修复</li><li>收获1<br /> 新增武器位置</li><li>收获4<br /> 终点安全门开启<br /> NAV终点导航修复&#34;</li><li>收获5<br /> 小屋窗户卡坦克<br /> 仓库卡坦克&#34;</li><li>牺牲1<br /> 牺牲第一关信号弹光感</li><li>牺牲3<br /> 拓展新机关区域</li><li>医院2 <br /> 最后武器点信号弹<br /> 临近安全室门口2楼BUG卡点<br /> 机枪检查<br /> 终点安全门周边屋子无门视觉问题</li><li>医院3<br /> 救护车卡坦克NAV问题<br /> 医院3下水道加灯<br /> 减少医院门口坦克可以打的铁&#34;</li><li>医院4<br /> 病床卡坦克问题NAV</li><li>医院5<br /> 电台机关等待时间过长修正</li><li>坠机1<br /> 人类扮演感染者无法进入复活点</li><li>坠机2<br /> 捷径警报车BUG</li></ul> 
-<p><font color="#FF9900">新增模式:</font><br /> 硬核模式(高强度)</p> 
-<ul><li>枪法练习<br /> 1.本模式不能推飞扑的Hunter<br /> 2.Hunter强度与对抗相同<br /> 3.被扑中扣去少量血量<br /> 4.如果空爆Hunter,玩家奖励大量血量<br /> 5.坦克伤害不高</li></ul> 
-<p>更多<a href="#modemore">模式介绍</a></p> 
-<p><a id="特别感谢">特别感谢</a></p> 
-<blockquote> 
- <p>服务器技术支持 : <strong>琥珀桑</strong><br /> 游戏各模式测试 : <strong>热心网友</strong><br /> </p> 
-</blockquote> 
-<hr /> 
-<h1><a id="_110"></a>二、游戏介绍</h1> 
-<h2><a id="_111"></a>Ⅰ、中文介绍</h2> 
-<h3><a id="1_112"></a>1.地图说明</h3> 
-<h4><a id="_113"></a>⑴.地图设定</h4> 
-<p>① 开局提供所有物资,最终营救关卡补给医疗包<br /> ② 无投掷,无大枪,无医疗包,途中只有药丸,药!药!药!<br /> ③ 所有刷枪点刷弹药点开放初级武器<br /> ④ 特感只有Hunter,多Hunter无尽复活<br /> ⑤ 每张地图第一关终点会刷新坦克(部分除外:牺牲1/大坝3)<br /> ⑥ 人类被杀后可以在营救点立刻复活,复活次数根据营救点而定<br /> ⑦ 服务器刷新速率支持 60tick<br /> ⑧ 地图是作者重新设计,限专家模式体验</p> 
-<h4><a id="_122"></a>⑵.地图解锁/重制</h4> 
-<ul><li><strong>解锁</strong></li></ul> 
-<blockquote> 
- <p>1.人类可以打破原先只有特感才能打破的墙壁<br /> 2.开启隐藏区域<br /> 3.解锁人类扮演的感染者无法进入DLC人类复活点.</p> 
-</blockquote> 
-<ul><li><strong>重制</strong></li></ul> 
-<blockquote> 
- <p>1.所有机关开启时间调整为秒开.</p> 
-</blockquote> 
-<h5><a id="a_131"></a>a.毫不留情</h5> 
-<ul><li>第四关:<br /> 1.开放电梯隐藏区域<br /> 2.电梯抵达后会释放坦克</li><li>第五关:<br /> 1.修复BUG卡点</li></ul> 
-<h5><a id="b_138"></a>b.坠机险途</h5> 
-<ul><li>第一关:解锁终点隐藏区域</li></ul> 
-<h5><a id="c_140"></a>c.死亡丧钟</h5> 
-<ul><li>第三关:解锁终点安全屋内隐藏区域(安全门可开启)</li><li>第四关:解锁终点安全屋内隐藏区域(安全门可开启)</li></ul> 
-<h5><a id="d_143"></a>d.寂静时分</h5> 
-<ul><li>第一关:</li><li>第三关:部分BUG点修复.</li><li>1<br /> 1.重制死亡丧钟与寂静时分衔接剧情地图</li></ul> 
-<h5><a id="e_148"></a>e.大坝(非官方自带地图,需下载)</h5> 
-<ul><li>第一关:<br /> 1.结尾引发无限尸潮取消<br /> 2.果园尸潮数量修复</li><li>第二关:<br /> 1.结尾机关无限尸潮取消<br /> 2.结尾机关尸潮数量修复</li><li>第三关:<br /> 1.开放本关地图所有药丸位置<br /> 2.取消最终营救前触发的坦克<br /> 3.触发油桶机关开始引发尸潮直到第二部电梯前结束.<br /> 4.修改最后机关打完坦克才能自动开启逃生大门</li></ul> 
-<h5><a id="f_161"></a>f.血型收获</h5> 
-<ul><li>第一关:解锁安全室附近的地下区域</li></ul> 
-<h5><a id="g_163"></a>g.牺牲</h5> 
-<ul><li>第二关:修复悬挂上船BUG</li><li>第三关:修复卡坦克BUG点</li></ul> 
-<h5><a id="h_166"></a>h.末路车站</h5> 
-<ul><li>解锁官方隐藏地图</li></ul> 
-<h3><a id="2_169"></a>2.地图顺序</h3> 
-<p>官方地图剧情顺序:<br /> 毫不留情 &gt; 坠机险途 &gt; 死亡丧钟 &gt; 寂静十分 &gt; 大坝 &gt;血型收获 &gt; 牺牲 &gt; 末路车站<br /> 大坝:(非游戏自带地图,需自行下载)</p> 
-<h3><a id="3_173"></a>3.游戏指令</h3> 
-<p><strong><font color="#3399EA">游戏常用指令(<font color="#FF662A">指令仅叹号&#43;小写字母</font>)</font></strong></p> 
-<pre><code class="prism language-sm">申请位置:!sq (!sq&#43;空格&#43;你想说的话,例:!sq 带我玩玩)
-加入人类:!jr | !jiaru | !join | !sur		(有空闲活着的电脑人时可以加入)
-加入感染:!pb | !gr | !inf		(挑战模式/练习模式才可以加入感染者)
-旁观空闲:!pg | !afk | !away
-改变外观:!bx | !hr
-主动自杀:!zs | !kill
-查询排名:!pm | !top		(天梯模式前十名)
-查询信息:!xx | !rank		(天梯模式个人统计)
-查看总分:!zf | !point 	(天梯模式查看积分总数)
-查看积分:!jf | !score 	(天梯模式查看当前关卡自己已获得分数)
-更多指令:!ml
-模式投票:!tp|!mode
-玩法说明:!hmod
-游戏简介:!motd
-</code></pre> 
-<h3><a id="4BUG_191"></a>4.官方BUG修复</h3> 
-<p>修复官方缺陷设定和新增辅助功能<br /> ① 起点安全屋属于保护区域,玩家在该区域不能互相伤害<br /> ② 手持药丸,准心指向队友可以按E键传递药丸(修复右键判断成推,而不是给药的错误)<br /> ③ 禁止卡住攀爬的梯子的感染者<br /> ④ 新增标记点,按键T(喷漆键)<br /> ⑤ 解锁部分官方为开放地图区域(丧钟3/4终点安全门,血型收获)<br /> ⑥ 开放丧钟与寂静时分两张地图的衔接剧情地图(隐藏彩蛋)</p> 
-<hr /> 
-<h2><a id="English_Explain_201"></a>Ⅱ、英文介绍(English Explain)</h2> 
-<p>------Map mode setting ------<br /> ① start to provide all the supplies, and finally rescue the level replenishment medical package<br /> ② no throw, no big gun, no medical kit, only pills<br /> ③ brush gun point brush ammunition point open all primary weapons<br /> ④ special feelings Hunter endless resurrection<br /> ⑤ map is the master redesign, limited expert mode experience<br /> -----Single mode-----<br /> Hunter threw the survivor’s blood to automatically die<br /> ① 2 Hunter&#43;5 zombies, the final level has a corpse<br /> ② attacking damage: 25HP, paw injury: 10HP<br /> ③ paws can not cause damage when pushing the Hunter<br /> ④ players have no fall, no blood and die<br /> ⑤ powerful players can apply to increase the number of Hunter<br /> -----Double mode-----<br /> Hunter needs a teammate to rescue. Team teamwork.<br /> ① 3 Hunter&#43;10 zombies, corpse tide: 10<br /> ② claw damage: 15HP, the number of falls: 1<br /> -----Three-person mode-----<br /> ① 3 Hunter&#43;20 zombies, corpse tide: 20<br /> ② claw damage: 20HP, the number of falls: 2<br /> -----Quad Mode-----<br /> ① 3 Hunter&#43;30 zombies, corpse tide: 30<br /> ② claw damage: 40HP, the number of falls: 2</p> 
-<hr /> 
-<p><a id="modemore"></a></p> 
-<h1><a id="_228"></a>三、模式介绍</h1> 
-<h2><a id="_229"></a>Ⅰ、休闲模式</h2> 
-<p><font color="blue">普通模式游戏设定(<font color="#FF662A">新手</font>)</font><br /> <font color="#276694">默认官方游戏设定<br /> 游戏难度:★☆☆☆☆<br /> 适合水平:专家难度游戏时间(50小时)</font><br /> -----单人模式-----<br /> <font color="#276694">Hunter扑倒幸存者会自动扣除一定血量</font><br /> ① 猎人:1,僵尸:5,营救有尸潮<br /> ② 扑人伤害:3HP,爪子伤害:5HP<br /> ③ 推Hunter时,爪子无伤害力<br /> ④ 坦克生命:3000HP<br /> ⑤ 坦克伤害:10HP<br /> ⑥ 玩家无倒地,无血即死</p> 
-<p>-----双人模式-----<br /> <font color="276694">被扑需队友营救.团队配合,倒地一次黑白</font><br /> ① 猎人:2,僵尸:10,尸潮:10<br /> ② 爪伤:5HP,倒地:1<br /> ③ 坦克生命:4000HP<br /> ④ 坦克伤害:10HP<br /> ⑤ 扶起队友速度加快</p> 
-<p>-----三人模式-----<br /> ① 猎人:2,僵尸:15,尸潮:20<br /> ② 爪伤:5HP,倒地:2<br /> ③ 坦克生命:6000HP<br /> ④ 坦克伤害:10HP</p> 
-<p>-----四人模式-----<br /> ① 猎人:3,僵尸:20,尸潮:30<br /> ② 爪伤:5HP,倒地:2<br /> ③ 坦克生命:8000HP<br /> ④ 坦克伤害:10HP</p> 
-<h2><a id="_262"></a>Ⅱ、进阶模式</h2> 
-<p><font color="blue">进阶模式游戏设定(<font color="#FF662A">专家</font>)</font><br /> <font color="#276694">Hunter智商提高/坦克智商提高,击倒玩家不打死,<br /> 游戏难度:★★★☆☆<br /> 适合水平:专家难度两个月游戏时间(1500小时)</font><br /> -----单人模式-----<br /> <font color="#276694">Hunter扑倒幸存者会自动扣除一定血量</font><br /> ① 猎人:2,僵尸:3,营救有尸潮<br /> ② 扑人伤害:10HP,爪子伤害:10HP<br /> ③ 推Hunter时,爪子无伤害力<br /> ④ 坦克生命:3000HP<br /> ⑤ 坦克出现时,有Hunter干扰<br /> ⑥ 玩家无倒地,无血即死</p> 
-<p>-----双人模式-----<br /> <font color="276694">被扑需队友营救.团队配合,倒地一次黑白</font><br /> ① 猎人:2,僵尸:10,尸潮:10<br /> ② 爪伤:10HP,倒地:1<br /> ③ 坦克生命:4000HP<br /> ④ 扶起队友速度加快</p> 
-<p>-----三人模式-----<br /> ① 猎人:2,僵尸:15,尸潮:20<br /> ② 爪伤:10HP,倒地:2<br /> ③ 坦克生命:6000HP</p> 
-<p>-----四人模式-----<br /> ① 猎人:3,僵尸:20,尸潮:30<br /> ② 爪伤:10HP,倒地:2<br /> ③ 坦克生命:8000HP</p> 
-<h2><a id="_292"></a>Ⅲ、硬核模式</h2> 
-<p><font color="blue">硬核模式游戏设定(<font color="#FF662A">练枪</font>)</font><br /> <font color="#276694">特感与坦克智商进阶难度基础上再次提升<br /> 玩家水平:★★★★☆<br /> 玩家水平:专家难度(视个人能力)</font><br /> -----单人模式-----<br /> 1.本模式不能推飞扑的Hunter<br /> 2.Hunter飞扑血量与对抗相同<br /> 3.被扑中扣去少量血量<br /> 4.如果空爆Hunter,玩家奖励大量血量<br /> 5.坦克伤害不高<br /> ① 猎人:2,僵尸:3,尸潮:5<br /> ② 扑人伤害:3HP,爪伤:10HP<br /> ③ 坦克生命:8000HP<br /> ④ 坦克出现时,有Hunter干扰<br /> ⑤ 玩家无倒地,无血即死</p> 
-<h2><a id="_309"></a>Ⅳ、怀旧模式</h2> 
-<p><font color="blue">经典版本:猎人模式1.5(<font color="#FF662A">旧版特感强化</font>)</font><br /> -----单人模式-----<br /> <font color="#276694">Hunter扑倒幸存者会自动扣除一定血量</font><br /> ① 猎人:2,僵尸:无,营救有尸潮<br /> ② 扑人伤害:25HP,爪子伤害:10HP<br /> ③ 推Hunter时,爪子无伤害力<br /> ④ 坦克生命:3000HP<br /> ⑤ 玩家无倒地,无血即死</p> 
-<p>-----双人模式-----<br /> <font color="276694">被扑需队友营救.团队配合,倒地一次黑白</font><br /> ① 猎人:3,僵尸:10,尸潮:10<br /> ② 爪伤:10HP,倒地:1<br /> ③ 坦克生命:4000HP</p> 
-<p>-----三人模式-----<br /> ① 猎人:3,僵尸:15,尸潮:20<br /> ② 爪子:10HP,倒地:2<br /> ③ 坦克生命:6000HP</p> 
-<p>-----四人模式-----<br /> ① 猎人:3,僵尸:20,尸潮:30<br /> ② 爪伤:10HP,倒地:2<br /> ③ 坦克生命:8000HP</p> 
-<h2><a id="_334"></a>Ⅴ、天梯模式</h2> 
-<p><font color="blue">排行设置(<font color="#FF662A">积分获得方法 / 玩家数据统计说明</font>)</font><br /> 1.积分只有成功通过当前光卡的玩家才被系统记录保存.<br /> 2.获得积分:空爆Hunter,空爆石头,击杀坦克,秒杀Witch,完整地图<br /> 3.玩家数据:击杀总数,击杀Hunter,空爆Hunter,空爆石头,击杀坦克,秒杀Witch<br /> 4.多人模式:当前关卡死亡玩家,队友如果过关,死亡玩家无积分.<br /> 5.多人模式:当前关卡死亡玩家,当前关卡已获得积分清零.<br /> 6.多人模式:当前关卡死亡玩家,中途被队友营救.当前关卡积分将重新统计.<br /> 7.中途加入游戏(非第一关)的玩家,通过最终营救,将无法获得完整地图的高额奖励.<br /> 8.中途更换模式(非第一关)的所有玩家,通过最终营救,将无法获得完整地图的高额奖励.<br /> 9.队伍灭团(游戏重开)将被扣除积分.积分为0时,将不会再扣除玩家积分.<br /> <font color="red">注意:<br />  本系统只是为了帮助玩家提升水平,并根据玩家水平给出一个综合的评定.如发现有玩家利用游戏漏洞或不正当手段获取积分,一经发现该玩家将直接积分归为负数,负数积分的玩家,将不会出现天梯模式的排行中.如情节恶劣者,直接封号.</font><br /> <font color="blue">  如果有玩家发现BUG或作弊进行及时反馈与举报,将按照情节严重程度,给予反馈玩家一定奖励.</font></p> 
-<h3><a id="_347"></a>月赛/季赛/半年度/全年度</h3> 
-<h2><a id="_349"></a>Ⅵ、练习模式</h2> 
-<ul><li>玩家可以扮演猎人(Hunter)和坦克(Tank),提升玩家对抗水平</li></ul> 
-<h2><a id="_351"></a>Ⅶ、其他模式</h2> 
-<h3><a id="1_352"></a>1.附加类</h3> 
-<p><font color="#276694">附加模式:(<font color="#FF662A">可以在任何模式中,通过投票附加此模式功能</font>)</font></p> 
-<h4><a id="_355"></a>⑴.写实模式</h4> 
-<p><font color="#276694">仿真视觉游戏环境(<font color="#FF662A">附加</font>)</font></p> 
-<h4><a id="_357"></a>⑵.吸血鬼模式</h4> 
-<p><font color="#276694">全程无医疗品物资补给(<font color="#FF662A">附加</font>)</font><br /> 空爆特感增加血量:3HP<br /> 杀死特感增加血量:1HP<br /> 空爆石头增加血量:5HP<br /> 杀死坦克满血奖励(未完成)<br /> 杀死女巫满血&#43;药丸奖励(未完成)</p> 
-<h3><a id="2_364"></a>2.娱乐类</h3> 
-<h4><a id="_365"></a>⑴.手雷大战</h4> 
-<ul><li>开局玩家获得手雷和小药,通过互投手雷击杀对方,最后幸存者获得胜利.<br /> 1.开局30秒,分配手雷及药丸<br /> 2.每人只有一颗药丸<br /> 3.手雷分:土质与火瓶可按键切换</li></ul> 
-<h4><a id="_370"></a>⑵.坦克追杀令(制作中)</h4> 
-<ul><li>开局只有坦克出现,会在地图各处围追堵截玩家<br /> 1.地图物资默认官方设定<br /> 2.玩家每局满血<br /> 3.玩家每局提供药丸补给<br /> 4.玩家子弹无限<br /> 5.坦克每拳伤害为30HP-90HP(待测试后设定玩家存活几率次数)</li></ul> 
-<h4><a id="_377"></a>⑶.大逃杀(待开发)</h4> 
-<ul><li>灵感源于电影&lt;BR大逃杀&gt;剧情,后有绝地求生游戏类似.<br /> 1.玩家随机分散出生在地图的各处<br /> 2.武器随机分配<br /> 3.玩家可携带2把主武器,2颗雷,1个医疗包,5个小药(吃药虚血慢增长再衰减)<br /> 4.地区资源默认官方设定2-3倍<br /> 5.最后玩家胜利,可选择投票换图或继续游戏<br /> 6.可以设置团队模式.(按角色分配队伍(按人数配置团队))</li></ul> 
-<h4><a id="_385"></a>⑷.捉迷藏又名躲猫猫(待开发)</h4> 
-<ul><li>玩家在固定区域变成物品模型,在一定时间内进行躲藏,如果被玩家找到失败.如果躲藏渡过指定时间,则玩家胜利.<br /> 根据玩家人数,设定下列不通条件,如5人(1鬼找4藏)<br /> 1.寻找者武器有10发子弹<br /> 2.游戏时间5-10分钟<br /> 3.被找到的玩家将进入下一轮被排进随机当鬼<br /> 4.未被找到的玩家将继续进行躲藏,直到所有人当过一轮鬼</li></ul> 
-<h4><a id="_392"></a>⑸.黑暗森林模式(待开发)</h4> 
-<ul><li>灵感源于小说&lt;三体&gt;,玩家在写实状态下都会隐身,只有开枪或攻击时会显现真身.游戏采用淘汰大逃杀方式.</li></ul> 
-<h4><a id="_394"></a>⑹.猎人派对(制作中)</h4> 
-<ul><li>事实证明Hunter病毒才是传播性感染性最强大的.所有的感染者人类都疯狂了,他们都会模仿Hunter去袭击你,他们没有任何理智.而你作为真正的Hunter进化者,一位强大的狩猎者,你才是最理智最清醒的,现在正是你进化过程中的衰弱期,人类的武器暂时还有用,拿起它,追寻军队的脚步,找到继续进化的办法.</li></ul> 
-<h2><a id="_396"></a>ⅧⅨⅩ</h2> 
-<hr /> 
-<h1><a id="_399"></a>四、版本介绍</h1> 
-<h2><a id="__400"></a>- 版本更新</h2> 
-<blockquote> 
- <p><a id="本次更新">本次更新</a><br /> <br /><strong>1.7g - 2022-04-1</strong><br /> -----天梯模式<br /> 1.完整地图通关,地图基础奖励积分提升2倍<br /> 2.新增天梯双人模式<br /> -----练习模式<br /> 1.新增三人模式<br /> 2.修正机枪拉坦克BUG,机枪改2代机枪<br /> -----其他<br /> 1.调整营救关卡机枪位置<br /> 2.调整天梯模式游戏难度<br /> 3.修复过关安全门不出坦克的BUG<br /> -----地图<br /> 1.修复大坝第1关,果园处尸潮数量问题<br /> 2.修复大坝第2关,终点机关尸潮数量问题<br /> 3.调整大坝第3关游戏机制(油桶引发尸潮一直持续到第2电梯处结束)<br /> <br /><strong>1.7f - 2022-3-15</strong><br /> -----增加练习模式(人vs人)<br /> 单人模式将调整玩家被扑后可以立即起身<br /> 双人时保持正常,被被扑后人物身体会显示半透明状态的无敌时间.<br /> <br /><strong>1.7c - 2022-2-13</strong><br /> 1.排行榜分数调整<br /> 完整通关积分算法:<br /> (关卡数量*(每关基础分数<em>关卡数量)) &#43; 存活奖励<br /> 如:基础分数为2,存活奖励:5<br /> 毫不留情完整通关将获得额外55分奖励<br /> 坠机险途完整通关将获得额外13分奖励<br /> 牺牲战役完整通关将获得额外23分奖励<br /> 分数根据关卡数量难易度提升额外奖励<br /> 2.击杀女巫不在受限每关分数上限.<br /> 如:每关分数上限23分&#43;击杀女巫数量</em>5分&#61;你当前过关分数<br /> 3.新增1v2与2v2 人人对战模式<br /> <br /><strong>1.7a 2022年</strong><br /> 2022年猎人模式重制版<br /> 重写制作模式及编写代码及游戏逻辑<br /> 更新感染者的智商判断,更加聪明与各种技术对抗<br /> 新增更多模式与玩法.<br /> 系统部分:<br /> 1.游戏系统全部重写(运行稳定流畅)<br /> 2.Hunter模式,猎人智商提高(会埋伏人类)<br /> 3.允许玩家加入感染者队伍,指令!pb(仅限练习模式)<br /> 4.新增玩家打爆坦克石头,会发出特殊语音<br /> 5.新增空爆Hunter时,有提示音<br /> 地图部分:<br /> 1.解锁官方隐藏区域<br /> 2.新增死亡丧钟与寂静十分之间未开放的衔接地图<br /> 3.调整部分地图视觉问题<br /> 4.人类可以打破感染者才可以破坏的墙壁(捷径路线)<br /> 5.修复旁观者在最终关卡屏幕视角被卡住问题.<br /> 修复历史BUG:<br /> 6.修复1.6<br /> 5.吸血鬼模式,全程无补给品,打特感奖励血量<br /> 6.新增游戏玩法说明菜单,指令!motd<br /> 其他模式:<br /> 1.默认模式(官方默认)<br /> 2.猎人模式(Huntre模式)<br /> 3.练习模式(人类可以扮演感染者,阻挠合作玩家)<br /> 4.吸血模式(无补给,打感染者给生命奖励)<br /> 5.手雷模式(娱乐模式:手雷互炸)<br /> 6.坦克模式(娱乐模式:不停出坦克,玩家速跑通关,锻炼身法)</p> 
-</blockquote> 
-<h2><a id="_463"></a>Ⅰ、历史版本</h2> 
-<blockquote> 
- <p><strong>​v1.6</strong><br /> 1.安全门恢复正常开关速度<br /> 2.新增系统提示:打爆坦克投掷物提示玩家名称<br /> 3.修复双人模式,倒地进入一次黑白状态<br /> 4.坦克出现安全门自动锁定,坦克死亡安全门解锁<br /> 5.吸血鬼模式,全程无补给品,打特感奖励血量<br /> 6.新增游戏玩法说明菜单,指令!hmod<br /> <br /><strong>v1.5</strong><br /> 1.多人游戏,Hunter扑倒玩家时,其他玩家如果离的太近会被震退,请保持2人间距<br /> 2.进阶模式启用2代坦克设定,打倒玩家后去追寻其他幸存者.<br /> 3.挑战模式,限制右键连续使用次数.连续使用会卸力,玩家需要短暂时间恢复右键力量<br /> 4.修复1.4版本玩家死亡后,游戏不能重新开始的问题.<br /> 5.调整地图和一些其他的BUG<br /> 6.服务器支持60tick刷新率,提升流畅度<br /> <br /><strong>v1.4</strong><br /> 1.调整安全门,禁止玩家跑图<br /> 2.修复人类卡住特感攀爬或楼梯BUG<br /> 3.修复人类跳楼捷径BUG<br /> 4.新增模式投票,输入!tp选择玩法<br /> <br /><strong>v1.3</strong><br /> 1.新增进阶模式<br /> 2.加强Hunter智商,仿人类玩家<br /> 3.增加空爆Hunter,玩家名称提示<br /> 4.加强TANK智商,会连跳加速<br /> 5.增加玩家杀坦克攻击输出统计<br /> 6.新增牺牲地图单人模式通关<br /> <br /><strong>v1.2</strong><br /> 1.修复单人模式Hunter扑人不扣血<br /> 2.调整Hunter复活时间<br /> 3.调整僵尸刷新速度<br /> 4.新增Hunter多人合作模式<br /> 5.替换所有二级武器<br /> 6.禁止地图补给及投掷物<br /> <br /><strong>v1.1</strong><br /> 1.增加单人模式<br /> 2.调整单人模式坦克血量<br /> 3.调整单人模式僵尸数量<br /> <strong>下载链接:<a href="https://pan.baidu.com/s/13yZAge3I459BJJBUqbDRzw">H-MOD v1.1</a>(提取码:jipx)</strong><br /> <strong>CSDN下载:<a href="https://download.csdn.net/download/ZBzibing/16672123">H-MOD v1.1</a></strong><br /> <br /><strong>v1.0</strong><br /> 1.2018年10月20 系统化建立Hunter模式游戏规则,简称H-MODE<br /> 2.2017年 尝试创建只有Hunter的过关方式<br /> 3.2016年 药抗模式启发,想单机练习打Hunter<br /> 4.2014年 尝试制作单通模式游戏规则<br /> 5.2012年 追求挑战,单人无电脑辅助,单通专家所有地图</p> 
-</blockquote>
-                </div>
-                <link href="https://csdnimg.cn/release/blogv2/dist/mdeditor/css/editerView/markdown_views-98b95bb57c.css" rel="stylesheet">
-                <link href="https://csdnimg.cn/release/blogv2/dist/mdeditor/css/style-c216769e99.css" rel="stylesheet">
-        </div>
-        <div id="treeSkill"></div>
-    </article>
-<script>
-  $(function() {
-    setTimeout(function () {
-      var mathcodeList = document.querySelectorAll('.htmledit_views img.mathcode');
-      if (mathcodeList.length > 0) {
-        for (let i = 0; i < mathcodeList.length; i++) {
-          if (mathcodeList[i].naturalWidth === 0 || mathcodeList[i].naturalHeight === 0) {
-            var alt = mathcodeList[i].alt;
-            alt = '\\(' + alt + '\\)';
-            var curSpan = $('<span class="img-codecogs"></span>');
-            curSpan.text(alt);
-            $(mathcodeList[i]).before(curSpan);
-            $(mathcodeList[i]).remove();
-          }
-        }
-        MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
-      }
-    }, 1000)
-  });
-</script>
-  <script src="https://g.csdnimg.cn/lib/jQuery.print/1.5.1/jQuery.print.min.js"></script>
-  <img src="https://img-home.csdnimg.cn/images/20211209110851.png" alt="pdf_watermark" width="0" height="0" style="display: none">
-  <div class="print_watermark"></div>
-  <div class="print_watermark_info">
-    <p>内容来源：csdn.net</p>
-    <p>作者昵称：ZBzibing</p>
-    <p>原文链接：https://blog.csdn.net/ZBzibing/article/details/122685497</p>
-    <p>作者主页：https://blog.csdn.net/ZBzibing</p>
+<body>
+<header>
+  <div class="logo">LibBox · 开源库合集</div>
+  <div class="header-nav">
+    <a href="javascript:switchCard(0)" class="header-link">UtilsKit</a>
+    <a href="javascript:switchCard(1)" class="header-link">LiteUI</a>
+    <a href="javascript:switchCard(2)" class="header-link">FetchMini</a>
+    <a href="javascript:switchCard(3)" class="header-link">FileHelper</a>
+    <a href="https://github.com/你的用户名" target="_blank" class="header-link github-btn">GitHub</a>
   </div>
+</header>
+
+<div class="poker-wrap">
+  <button class="slide-btn btn-left" id="prevBtn">←</button>
+  <button class="slide-btn btn-right" id="nextBtn">→</button>
+  <div class="poker-box" id="cardContainer">
+    <!-- 扑克牌1：工具库A 自定义背景图 -->
+    <div class="poker-card">
+      <div class="card-bg" style="background-image: url('https://picsum.photos/id/1/1200/1600');"></div>
+      <div class="card-mask"></div>
+      <div class="card-inner">
+        <h2 class="card-title">UtilsKit</h2>
+        <p class="card-desc">轻量前端工具函数库，零依赖，浏览器&Node双端通用，内置格式化、数组处理、存储工具。</p>
+        <h3 class="card-subtitle">技术栈</h3>
+        <div class="tag-group">
+          <span class="tag">TypeScript</span>
+          <span class="tag">ESModule</span>
+          <span class="tag">Tree-Shaking</span>
+        </div>
+        <h3 class="card-subtitle">快速使用</h3>
+        <div class="code-block">
+<pre>npm install utils-kit
+import { formatTime } from 'utils-kit'
+console.log(formatTime(Date.now()))</pre>
+        </div>
+        <div class="card-buttons">
+          <a href="#" class="btn-card-primary">文档</a>
+          <a href="#" class="btn-card-outline">Github仓库</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 扑克牌2：UI组件库 自定义背景图 -->
+    <div class="poker-card">
+      <div class="card-bg" style="background-image: url('https://picsum.photos/id/20/1200/1600');"></div>
+      <div class="card-mask"></div>
+      <div class="card-inner">
+        <h2 class="card-title">LiteUI</h2>
+        <p class="card-desc">极简轻量UI组件库，无第三方样式依赖，原生CSS，适配移动端与管理后台。</p>
+        <h3 class="card-subtitle">技术栈</h3>
+        <div class="tag-group">
+          <span class="tag">Vanilla JS</span>
+          <span class="tag">CSS Variables</span>
+          <span class="tag">响应式</span>
+        </div>
+        <h3 class="card-subtitle">快速使用</h3>
+        <div class="code-block">
+<pre>import { Button, Modal } from 'lite-ui'
+Modal.show({title:'提示',content:'演示弹窗'})</pre>
+        </div>
+        <div class="card-buttons">
+          <a href="#" class="btn-card-primary">文档</a>
+          <a href="#" class="btn-card-outline">Github仓库</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 扑克牌3：数据请求库 自定义背景图 -->
+    <div class="poker-card">
+      <div class="card-bg" style="background-image: url('https://picsum.photos/id/45/1200/1600');"></div>
+      <div class="card-mask"></div>
+      <div class="card-inner">
+        <h2 class="card-title">FetchMini</h2>
+        <p class="card-desc">基于原生fetch封装的请求库，拦截器、缓存、超时、自动序列化，替代axios轻量化方案。</p>
+        <h3 class="card-subtitle">技术栈</h3>
+        <div class="tag-group">
+          <span class="tag">Fetch API</span>
+          <span class="tag">缓存策略</span>
+          <span class="tag">请求拦截</span>
+        </div>
+        <h3 class="card-subtitle">快速使用</h3>
+        <div class="code-block">
+<pre>import http from 'fetch-mini'
+const res = await http.get('/api/list')</pre>
+        </div>
+        <div class="card-buttons">
+          <a href="#" class="btn-card-primary">文档</a>
+          <a href="#" class="btn-card-outline">Github仓库</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 扑克牌4：文件处理库 自定义背景图 -->
+    <div class="poker-card">
+      <div class="card-bg" style="background-image: url('https://picsum.photos/id/68/1200/1600');"></div>
+      <div class="card-mask"></div>
+      <div class="card-inner">
+        <h2 class="card-title">FileHelper</h2>
+        <p class="card-desc">浏览器端文件处理工具，图片压缩、文件导出、Blob转换、分片上传封装。</p>
+        <h3 class="card-subtitle">技术栈</h3>
+        <div class="tag-group">
+          <span class="tag">Blob</span>
+          <span class="tag">FileReader</span>
+          <span class="tag">图片压缩</span>
+        </div>
+        <h3 class="card-subtitle">快速使用</h3>
+        <div class="code-block">
+<pre>import { compressImg } from 'file-helper'
+compressImg(file, {quality:0.7})</pre>
+        </div>
+        <div class="card-buttons">
+          <a href="#" class="btn-card-primary">文档</a>
+          <a href="#" class="btn-card-outline">Github仓库</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="dot-group" id="dotWrap"></div>
+
+<script>
+const container = document.getElementById('cardContainer');
+const cardList = Array.from(document.querySelectorAll('.poker-card'));
+const total = cardList.length;
+const dotWrap = document.getElementById('dotWrap');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+let current = 0;
+let lock = false;
+
+// 生成底部圆点
+for(let i=0;i<total;i++){
+  const dot = document.createElement('div');
+  dot.className = 'dot';
+  if(i === current) dot.classList.add('active');
+  dot.onclick = ()=>switchCard(i);
+  dotWrap.appendChild(dot);
+}
+const dots = document.querySelectorAll('.dot');
+
+// 更新扑克牌堆叠位置、旋转、层级
+function updatePokerStyle(){
+  cardList.forEach((card, idx)=>{
+    card.classList.remove('active','prev','next','hide-1','hide-2');
+    if(idx === current){
+      card.classList.add('active');
+    }else if(idx === current - 1){
+      card.classList.add('prev');
+    }else if(idx === current + 1){
+      card.classList.add('next');
+    }else if(idx < current - 1){
+      card.classList.add('hide-1');
+    }else if(idx > current + 1){
+      card.classList.add('hide-2');
+    }
+  })
+  // 更新圆点激活
+  dots.forEach((dot,i)=> dot.classList.toggle('active',i===current));
+}
+
+// 切换卡片核心函数
+function switchCard(index){
+  if(lock) return;
+  if(index <0) index = total - 1;
+  if(index >= total) index = 0;
+  lock = true;
+  current = index;
+  updatePokerStyle();
+  setTimeout(()=>lock=false,500);
+}
+
+// 左右按钮
+prevBtn.onclick = ()=>switchCard(current - 1);
+nextBtn.onclick = ()=>switchCard(current + 1);
+
+// 鼠标滚轮切换
+window.addEventListener('wheel',(e)=>{
+  e.preventDefault();
+  if(e.deltaY > 30) switchCard(current + 1);
+  if(e.deltaY < -30) switchCard(current - 1);
+},{passive:false})
+
+// 键盘左右键
+window.addEventListener('keydown',e=>{
+  if(e.key === 'ArrowLeft') switchCard(current - 1);
+  if(e.key === 'ArrowRight') switchCard(current + 1);
+})
+
+// 初始化渲染布局
+updatePokerStyle();
+</script>
+</body>
+</html>
